@@ -24,6 +24,8 @@ GRADING CRITERIA:
 
 import maya.cmds as cmds
 
+#this line imports the math module
+import math
 
 def create_building(width=4, height=8, depth=4, position=(0, 0, 0)):
     """Create a simple building from a cube, placed on the ground plane.
@@ -41,13 +43,14 @@ def create_building(width=4, height=8, depth=4, position=(0, 0, 0)):
     Returns:
         str: The name of the created building transform node.
     """
-    # TODO: Implement this function.
-    #   1. Create a polyCube with the given width, height, and depth.
-    #   2. Move it so its base sits on the ground at 'position'.
-    #      Hint: offset Y by height / 2.0.
-    #   3. Return the object name.
-    pass
+#this line of code create building geometry
+building = cmds.polyCube(w=width, h=height, d=depth, name="building_01")[0]
 
+#this line moves the mesh so the base sit son the ground plane. 
+cmds.xform(building, translation=(position[0], position[1] + (height / 2.0), position[2]))
+
+#this line returns object name
+return building
 
 def create_tree(trunk_radius=0.3, trunk_height=3, canopy_radius=2,
                 position=(0, 0, 0)):
@@ -62,14 +65,21 @@ def create_tree(trunk_radius=0.3, trunk_height=3, canopy_radius=2,
     Returns:
         str: The name of a group node containing the trunk and canopy.
     """
-    # TODO: Implement this function.
-    #   1. Create a polyCylinder for the trunk and position it.
-    #   2. Create a polySphere for the canopy, positioned on top of the trunk.
-    #   3. Group trunk and canopy together using cmds.group().
-    #   4. Move the group to 'position'.
-    #   5. Return the group name.
-    pass
 
+#this line creates the trunk and moves it so it's at Y=0
+trunk = cmds.polyCylinder(r=trunk_radius, h=trunk_height, name="trunk")[0]
+cmds.xform(trunk, translation=(0, trunk_height / 2.0, 0))
+
+#this line creatse the canopy
+canopy = cmds.polySphere(r=canopy_radius, name="canopy")[0]
+cmds.xform(canopy, translation=(0, trunk_height + (canopy_radius * 0.75), 0))
+
+#this line groups the tree and canopy, and moves them to the targeted position
+tree_grp = cmds.group(trunk, canopy, name="tree_grp")
+cmds.xform(tree_grp, translation=position)
+
+#this line returns the group name
+return tree_grp
 
 def create_fence(length=10, height=1.5, post_count=6, position=(0, 0, 0)):
     """Create a simple fence made of posts and rails.
@@ -85,14 +95,27 @@ def create_fence(length=10, height=1.5, post_count=6, position=(0, 0, 0)):
     Returns:
         str: The name of a group node containing all fence parts.
     """
-    # TODO: Implement this function.
-    #   1. Calculate spacing between posts: length / (post_count - 1).
-    #   2. Loop to create 'post_count' thin, tall cubes as posts.
-    #   3. Create a long, thin cube as a horizontal rail connecting them.
-    #   4. Group everything and move to 'position'.
-    #   5. Return the group name.
-    pass
 
+items_to_group = []
+spacing = length / (post_count - 1)
+
+#this line creates the vertical posts
+for i in range(post_count):
+    post = cmds.polyCube(w=0.2, h=height, d=0.2, name=f"fence_post_{i}")[0]
+    cmds.xform(post, translation=(i * spacing, height / 2.0, 0))
+    items_to_group.append(post)
+
+#this line creates the horizontal rails
+rail = cmds.polyCube(w=length, h=0.2, d=0.1, name="fence_rail")[0]
+cmds.xform(rail, translation=(length / 2.0 - 0.1, height * 0.75, 0))
+items_to_group.append(rail)
+
+#this line groups the horizontal rails and the vertical posts, and moves them into position
+fence_grp = cmds.group(items_to_group, name="fence_grp")
+cmds.xform(fence_grp, translation=position)
+
+#this line returns the group name
+return fence_grp
 
 def create_lamp_post(pole_height=5, light_radius=0.5, position=(0, 0, 0)):
     """Create a street lamp using a cylinder pole and a sphere light.
@@ -105,12 +128,20 @@ def create_lamp_post(pole_height=5, light_radius=0.5, position=(0, 0, 0)):
     Returns:
         str: The name of a group node containing the pole and light.
     """
-    # TODO: Implement this function.
-    #   1. Create a thin polyCylinder for the pole.
-    #   2. Create a polySphere for the light, placed at the top of the pole.
-    #   3. Group them, move to 'position', and return the group name.
-    pass
+#this line creates the pole using a cylinder
+pole = cmds.polyCylinder(r=0.15, h=pole_height, name="lamp_pole")[0]
+cmds.xform(pole, translation=(0, pole_height / 2.0, 0))
 
+#this line creates the bulb
+bulb = cmds.polySphere(r=light_radius, name="lamp_bulb")[0]
+cmds.xform(bulb, translation=(0, pole_height, 0))
+
+#this line groups and repositions the pole and bulb
+lamp_grp = cmds.group(pole, bulb, name="lamp_post_grp")
+cmds.xform(lamp_grp, translation=position)
+
+#this line returns the group name
+return lamp_grp
 
 def place_in_circle(create_func, count=8, radius=10, center=(0, 0, 0),
                      **kwargs):
@@ -132,13 +163,18 @@ def place_in_circle(create_func, count=8, radius=10, center=(0, 0, 0),
     Returns:
         list: A list of object/group names created by create_func.
     """
-    # TODO: Implement this function.
-    #   1. Import the math module (at the top of the file or here).
-    #   2. Loop 'count' times. For each iteration:
-    #       a. Calculate the angle: angle = 2 * math.pi * i / count
-    #       b. Calculate x = center[0] + radius * math.cos(angle)
-    #       c. Calculate z = center[2] + radius * math.sin(angle)
-    #       d. Call create_func(position=(x, center[1], z), **kwargs)
-    #       e. Append the returned name to a results list.
-    #   3. Return the results list.
-    pass
+
+for i in range(count):
+    #This line calculates the angle in radians 
+    angle = 2 * math.pi * i / count
+
+    #this line calculates the x and z coordinates based on the circle formula
+    x = center[0] + radius * math.cos(angle)
+    z = center[2] + radius * math.sin(angle)
+
+    #this line calls the passed function with the calculated position and extra arguments
+    new_obj = create_func(position=(x, center[1], z), **kwargs)
+    results.append(new_obj)
+
+#this line returns results
+return results
