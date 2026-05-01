@@ -24,6 +24,7 @@ GRADING CRITERIA:
 
 import maya.cmds as cmds
 
+cmds.file(new=True, force=True)
 #this line imports the math module
 import math
 
