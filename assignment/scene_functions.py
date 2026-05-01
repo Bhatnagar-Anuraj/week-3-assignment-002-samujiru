@@ -24,7 +24,6 @@ GRADING CRITERIA:
 
 import maya.cmds as cmds
 
-cmds.file(new=True, force=True)
 #this line imports the math module
 import math
 
@@ -157,15 +156,12 @@ def place_in_circle(create_func, count=8, radius=10, center=(0, 0, 0),
     Returns:
         list: A list of object/group names created by create_func.
     """
-
     for i in range(count):
         #This line calculates the angle in radians 
         angle = 2 * math.pi * i / count
-
         #this line calculates the x and z coordinates based on the circle formula
         x = center[0] + radius * math.cos(angle)
         z = center[2] + radius * math.sin(angle)
-
         #this line calls the passed function with the calculated position and extra arguments
         new_obj = create_func(position=(x, center[1], z), **kwargs)
         results.append(new_obj)
