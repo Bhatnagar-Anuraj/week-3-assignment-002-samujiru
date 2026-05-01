@@ -165,5 +165,7 @@ def place_in_circle(create_func, count=8, radius=10, center=(0, 0, 0),
         #this line calls the passed function with the calculated position and extra arguments
         new_obj = create_func(position=(x, center[1], z), **kwargs)
         results.append(new_obj)
+    #this line creates the master group
+    master_grp = cmds.group(results, name="circle_arrangement")
     #this line returns results
     return results
